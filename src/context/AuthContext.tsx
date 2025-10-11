@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (companyCode: string, username: string, password: string) => {
+  const login = async (companyCode: string, username: string, _password: string) => {
     try {
       // Supabase User 테이블에서 직접 조회만! Auth 사용 안 함
       const { data: userData, error } = await supabase
