@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { APP_VERSION } from '../config/version'
 
 export function LoginPage() {
   const [companyCode, setCompanyCode] = useState('')
@@ -113,6 +114,7 @@ export function LoginPage() {
 
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">© 2024 MEMORA. All rights reserved.</p>
+          <p className="text-xs text-gray-400 mt-2">Version {APP_VERSION}</p>
         </div>
       </div>
     </div>
