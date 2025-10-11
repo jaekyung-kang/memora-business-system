@@ -7,7 +7,7 @@ import { wiredFormSchema } from '../schemas/wired'
 import type { WiredFormData } from '../schemas/wired'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import { AddressSearchButton } from '../components/AddressSearchButton'
+import { KakaoAddressSearch } from '../components/KakaoAddressSearch'
 
 export function WiredNewPage() {
   const navigate = useNavigate()
@@ -128,22 +128,15 @@ export function WiredNewPage() {
             {/* 주소 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">주소 *</label>
-              <div className="flex gap-2">
-                <input
-                  {...register('address')}
-                  disabled={isLoading}
-                  placeholder="주소 검색 버튼을 클릭하세요"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  readOnly
-                />
-                <AddressSearchButton
-                  onSelect={(address, zipCode) => {
-                    setValue('address', address)
-                    setValue('zipCode', zipCode)
-                  }}
-                />
-              </div>
+              <KakaoAddressSearch
+                onSelect={(address, zipCode) => {
+                  setValue('address', address)
+                  setValue('zipCode', zipCode)
+                }}
+                disabled={isLoading}
+              />
               {errors.address && <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>}
+              <input type="hidden" {...register('address')} />
             </div>
 
             <div>
