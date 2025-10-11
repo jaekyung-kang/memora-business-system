@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (companyCode: string, username: string, password: string) => {
     try {
-      // Supabase User 테이블에서 직접 조회
+      // Supabase User 테이블에서 직접 조회 (비밀번호 검증 없음)
       const { data: userData, error } = await supabase
         .from('User')
         .select('*')
@@ -49,13 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error || !userData) {
         throw new Error('아이디 또는 비밀번호가 일치하지 않습니다')
-      }
-
-      // 비밀번호 검증 (간단한 검증 - 실제로는 해시 비교 필요)
-      // 참고: Supabase User 테이블에는 password 컬럼이 없을 수 있습니다
-      // 임시로 username이 'admin'이면 로그인 허용
-      if (username !== 'admin') {
-        throw new Error('권한이 없습니다')
       }
 
       // 사용자 정보 저장
