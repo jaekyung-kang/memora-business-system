@@ -1,75 +1,69 @@
-# MEMORA - 통신 가입 관리 시스템
+# MEMORA Frontend (Vite + React)
 
-통신사 가입 접수 및 관리를 위한 웹 애플리케이션
+이동통신 가입 접수 시스템 - 프론트엔드
 
-## 📦 프로젝트 구조
+## 🚀 개발 서버 실행
 
-```
-memora-monorepo/
-├── frontend/          # Vite + React + TypeScript
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── context/
-│   │   └── services/
-│   └── package.json
-│
-└── backend/           # Express + Prisma + TypeScript
-    ├── src/
-    │   ├── routes/
-    │   └── server.ts
-    ├── prisma/
-    └── package.json
-```
-
-## 🚀 빠른 시작
-
-### 프론트엔드
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
 
-### 백엔드
-```bash
-cd backend
-npm install
-npm run dev
-```
+포트: http://localhost:5173
 
-## 🔧 기술 스택
+## 🔐 로그인 정보
 
-### Frontend
-- Vite + React 18
+**관리자:**
+- Company Code: 01
+- Username: admin
+- Password: admin123!
+
+**사용자:**
+- Company Code: 08
+- Username: user
+- Password: user123!
+
+## 🛠️ 기술 스택
+
+- Vite 7
+- React 19
 - TypeScript
+- Tailwind CSS 3
 - React Router
 - Axios
-- Tailwind CSS (Utility Classes)
+- React Hook Form
+- Lucide Icons
 
-### Backend
-- Express.js
-- Prisma ORM
-- PostgreSQL (Supabase)
-- JWT Authentication
-- TypeScript
+## 📦 빌드
 
-## 📱 주요 기능
+```bash
+npm run build
+```
 
-- ✅ JWT 기반 인증
-- ✅ 유선/무선 가입 접수
-- ✅ 관리자 대시보드
-- ✅ 사용자 관리
-- ✅ 사전 관리
-- ✅ 감사 로그
+빌드 결과: `dist/` 폴더
 
-## 🌐 배포
+## 🌐 환경변수
 
-- Frontend: Vercel
-- Backend: Railway
-- Database: Supabase
+`.env` 파일:
+```
+VITE_API_URL=http://localhost:3001/api
+```
 
-## 📄 라이선스
+프로덕션:
+```
+VITE_API_URL=https://your-api-server.com/api
+```
 
-Copyright © 2025 MEMORA
+## 🚀 배포
 
+Vercel/Netlify에 배포 가능
+
+**Vercel:**
+```bash
+vercel --prod
+```
+
+**Netlify:**
+```bash
+netlify deploy --prod
+```
