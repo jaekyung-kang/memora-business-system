@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (companyCode: string, username: string, password: string) => {
     try {
-      // Supabase User 테이블에서 직접 조회 (비밀번호 검증 없음)
+      // Supabase User 테이블에서 직접 조회만! Auth 사용 안 함
       const { data: userData, error } = await supabase
         .from('User')
         .select('*')
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('아이디 또는 비밀번호가 일치하지 않습니다')
       }
 
-      // 사용자 정보 저장
+      // 사용자 정보 저장 (비밀번호 검증 없음)
       setUser(userData)
       localStorage.setItem('user', JSON.stringify(userData))
     } catch (error: any) {
