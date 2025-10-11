@@ -7,6 +7,7 @@ import { wirelessFormSchema } from '../schemas/wireless'
 import type { WirelessFormData } from '../schemas/wireless'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { AddressSearchButton } from '../components/AddressSearchButton'
 
 export function WirelessNewPage() {
   const navigate = useNavigate()
@@ -15,7 +16,7 @@ export function WirelessNewPage() {
   const [error, setError] = useState('')
   const [dictionaries, setDictionaries] = useState<any>({})
 
-  const { register, handleSubmit, formState: { errors } } = useForm<WirelessFormData>({
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<WirelessFormData>({
     resolver: zodResolver(wirelessFormSchema)
   })
 
@@ -122,11 +123,21 @@ export function WirelessNewPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">주소 *</label>
-              <input
-                {...register('address')}
-                disabled={isLoading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex gap-2">
+                <input
+                  {...register('address')}
+                  disabled={isLoading}
+                  placeholder="주소 검색 버튼을 클릭하세요"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  readOnly
+                />
+                <AddressSearchButton
+                  onSelect={(address, zipCode) => {
+                    setValue('address', address)
+                    setValue('zipCode', zipCode)
+                  }}
+                />
+              </div>
               {errors.address && <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>}
             </div>
 
