@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Layout } from '../../components/Layout'
-import { Plus, Edit, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Edit, Trash2 } from 'lucide-react'
 import { api } from '../../services/api'
 
 interface Dictionary {

@@ -7,7 +7,7 @@ export const wiredFormSchema = z.object({
   address: z.string().min(1, '주소를 입력해주세요'),
   detailAddress: z.string().optional(),
   zipCode: z.string().min(1, '우편번호를 입력해주세요'),
-  paymentMethod: z.enum(['ACCOUNT', 'CARD'], { required_error: '납부방법을 선택해주세요' }),
+  paymentMethod: z.enum(['ACCOUNT', 'CARD']).refine((val) => val, { message: '납부방법을 선택해주세요' }),
   accountInfo: z.string().optional(),
   cardInfo: z.string().optional(),
   serviceType: z.string().min(1, '서비스 유형을 선택해주세요'),
