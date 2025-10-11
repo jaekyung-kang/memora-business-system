@@ -27,7 +27,7 @@ export function LoginPage() {
       await login(companyCode, username, password)
       navigate('/')
     } catch (err: any) {
-      setError(err.response?.data?.error || '로그인 중 오류가 발생했습니다.')
+      setError(err.message || '로그인 중 오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
     }
