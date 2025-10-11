@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Layout } from '../../components/Layout'
 import { Plus, Edit, Trash2, UserCheck, UserX } from 'lucide-react'
-import { api } from '../../services/api'
+import { supabase } from '../../lib/supabase'
 
 interface User {
   id: string
@@ -31,8 +31,14 @@ export function AdminUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get('/admin/users')
-      setUsers(response.data)
+      const { data, error } = await supabase
+        .from('User')
+        .select('*')
+        .order('createdAt', { ascending: false })
+
+      if (!error && data) {
+        setUsers(data)
+      }
     } catch (error) {
       console.error('Failed to fetch users:', error)
     }
@@ -49,10 +55,22 @@ export function AdminUsersPage() {
 
     try {
       if (editingUser) {
-        await api.put(`/admin/users/${editingUser.id}`, formData)
+        const { error } = await supabase
+          .from('User')
+          .update(formData)
+          .eq('id', editingUser.id)
+
+        if (error) throw error
         setMessage('사용자가 수정되었습니다.')
       } else {
-        await api.post('/admin/users', formData)
+        const { error } = await supabase
+          .from('User')
+          .insert({
+            ...formData,
+            isActive: true
+          })
+
+        if (error) throw error
         setMessage('사용자가 생성되었습니다.')
       }
       setShowForm(false)
@@ -60,7 +78,7 @@ export function AdminUsersPage() {
       setFormData({ name: '', email: '', role: 'USER', code: '', phone: '' })
       fetchUsers()
     } catch (err: any) {
-      setError(err.response?.data?.error || '오류가 발생했습니다.')
+      setError(err.message || '오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
     }
@@ -82,21 +100,31 @@ export function AdminUsersPage() {
     if (!confirm('정말로 이 사용자를 삭제하시겠습니까?')) return
 
     try {
-      await api.delete(`/admin/users/${userId}`)
+      const { error } = await supabase
+        .from('User')
+        .delete()
+        .eq('id', userId)
+
+      if (error) throw error
       setMessage('사용자가 삭제되었습니다.')
       fetchUsers()
     } catch (err: any) {
-      setError(err.response?.data?.error || '삭제 중 오류가 발생했습니다.')
+      setError(err.message || '삭제 중 오류가 발생했습니다.')
     }
   }
 
   const toggleUserStatus = async (userId: string, isActive: boolean) => {
     try {
-      await api.patch(`/admin/users/${userId}/toggle`, { isActive: !isActive })
+      const { error } = await supabase
+        .from('User')
+        .update({ isActive: !isActive })
+        .eq('id', userId)
+
+      if (error) throw error
       setMessage(`사용자가 ${!isActive ? '활성화' : '비활성화'}되었습니다.`)
       fetchUsers()
     } catch (err: any) {
-      setError(err.response?.data?.error || '상태 변경 중 오류가 발생했습니다.')
+      setError(err.message || '상태 변경 중 오류가 발생했습니다.')
     }
   }
 

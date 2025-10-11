@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { wiredFormSchema } from '../schemas/wired'
 import type { WiredFormData } from '../schemas/wired'
-import { api } from '../services/api'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
 export function WiredNewPage() {
@@ -25,13 +25,20 @@ export function WiredNewPage() {
     // Dictionary 데이터 로드
     const loadDictionaries = async () => {
       try {
-        const response = await api.get('/dictionaries')
-        const dict = response.data.reduce((acc: any, item: any) => {
-          if (!acc[item.category]) acc[item.category] = []
-          acc[item.category].push(item)
-          return acc
-        }, {})
-        setDictionaries(dict)
+        const { data, error } = await supabase
+          .from('Dictionary')
+          .select('*')
+          .eq('isActive', true)
+          .order('order', { ascending: true })
+
+        if (!error && data) {
+          const dict = data.reduce((acc: any, item: any) => {
+            if (!acc[item.category]) acc[item.category] = []
+            acc[item.category].push(item)
+            return acc
+          }, {})
+          setDictionaries(dict)
+        }
       } catch (err) {
         console.error('Dictionary load error:', err)
       }
@@ -44,14 +51,19 @@ export function WiredNewPage() {
     setError('')
 
     try {
-      await api.post('/wired', {
-        ...data,
-        authorId: user?.id,
-        birthDate: new Date(data.birthDate)
-      })
+      const { error } = await supabase
+        .from('WiredForm')
+        .insert({
+          ...data,
+          authorId: user?.id,
+          birthDate: new Date(data.birthDate).toISOString(),
+          status: 'PENDING'
+        })
+
+      if (error) throw error
       navigate('/wired')
     } catch (err: any) {
-      setError(err.response?.data?.error || '접수 중 오류가 발생했습니다.')
+      setError(err.message || '접수 중 오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
     }

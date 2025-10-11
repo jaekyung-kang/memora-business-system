@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { wirelessFormSchema } from '../schemas/wireless'
 import type { WirelessFormData } from '../schemas/wireless'
-import { api } from '../services/api'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
 export function WirelessNewPage() {
@@ -22,13 +22,20 @@ export function WirelessNewPage() {
   useEffect(() => {
     const loadDictionaries = async () => {
       try {
-        const response = await api.get('/dictionaries')
-        const dict = response.data.reduce((acc: any, item: any) => {
-          if (!acc[item.category]) acc[item.category] = []
-          acc[item.category].push(item)
-          return acc
-        }, {})
-        setDictionaries(dict)
+        const { data, error } = await supabase
+          .from('Dictionary')
+          .select('*')
+          .eq('isActive', true)
+          .order('order', { ascending: true })
+
+        if (!error && data) {
+          const dict = data.reduce((acc: any, item: any) => {
+            if (!acc[item.category]) acc[item.category] = []
+            acc[item.category].push(item)
+            return acc
+          }, {})
+          setDictionaries(dict)
+        }
       } catch (err) {
         console.error('Dictionary load error:', err)
       }
@@ -41,14 +48,19 @@ export function WirelessNewPage() {
     setError('')
 
     try {
-      await api.post('/wireless', {
-        ...data,
-        authorId: user?.id,
-        birthDate: new Date(data.birthDate)
-      })
+      const { error } = await supabase
+        .from('WirelessForm')
+        .insert({
+          ...data,
+          authorId: user?.id,
+          birthDate: new Date(data.birthDate).toISOString(),
+          status: 'PENDING'
+        })
+
+      if (error) throw error
       navigate('/wireless')
     } catch (err: any) {
-      setError(err.response?.data?.error || '접수 중 오류가 발생했습니다.')
+      setError(err.message || '접수 중 오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
     }

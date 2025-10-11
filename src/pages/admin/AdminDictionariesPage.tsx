@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Layout } from '../../components/Layout'
 import { Plus, Edit, Trash2 } from 'lucide-react'
-import { api } from '../../services/api'
+import { supabase } from '../../lib/supabase'
 
 interface Dictionary {
   id: string
@@ -40,9 +40,16 @@ export function AdminDictionariesPage() {
 
   const fetchDictionaries = async () => {
     try {
-      const response = await api.get('/dictionaries')
-      setDictionaries(response.data)
-      setFilteredDictionaries(response.data)
+      const { data, error } = await supabase
+        .from('Dictionary')
+        .select('*')
+        .order('category', { ascending: true })
+        .order('order', { ascending: true })
+
+      if (!error && data) {
+        setDictionaries(data)
+        setFilteredDictionaries(data)
+      }
     } catch (error) {
       console.error('Failed to fetch dictionaries:', error)
     }
@@ -67,10 +74,22 @@ export function AdminDictionariesPage() {
 
     try {
       if (editingItem) {
-        await api.put(`/dictionaries/${editingItem.id}`, formData)
+        const { error } = await supabase
+          .from('Dictionary')
+          .update(formData)
+          .eq('id', editingItem.id)
+
+        if (error) throw error
         setMessage('사전 항목이 수정되었습니다.')
       } else {
-        await api.post('/dictionaries', formData)
+        const { error } = await supabase
+          .from('Dictionary')
+          .insert({
+            ...formData,
+            isActive: true
+          })
+
+        if (error) throw error
         setMessage('사전 항목이 생성되었습니다.')
       }
       setShowForm(false)
@@ -78,7 +97,7 @@ export function AdminDictionariesPage() {
       setFormData({ category: '', name: '', value: '', order: 0 })
       fetchDictionaries()
     } catch (err: any) {
-      setError(err.response?.data?.error || '오류가 발생했습니다.')
+      setError(err.message || '오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
     }
@@ -99,11 +118,16 @@ export function AdminDictionariesPage() {
     if (!confirm('정말로 이 항목을 삭제하시겠습니까?')) return
 
     try {
-      await api.delete(`/dictionaries/${itemId}`)
+      const { error } = await supabase
+        .from('Dictionary')
+        .delete()
+        .eq('id', itemId)
+
+      if (error) throw error
       setMessage('항목이 삭제되었습니다.')
       fetchDictionaries()
     } catch (err: any) {
-      setError(err.response?.data?.error || '삭제 중 오류가 발생했습니다.')
+      setError(err.message || '삭제 중 오류가 발생했습니다.')
     }
   }
 
