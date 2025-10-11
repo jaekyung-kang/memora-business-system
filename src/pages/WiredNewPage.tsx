@@ -7,7 +7,7 @@ import { wiredFormSchema } from '../schemas/wired'
 import type { WiredFormData } from '../schemas/wired'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import { KakaoAddressSearch } from '../components/KakaoAddressSearch'
+import { KakaoAddressModal } from '../components/KakaoAddressModal'
 
 export function WiredNewPage() {
   const navigate = useNavigate()
@@ -15,6 +15,7 @@ export function WiredNewPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [dictionaries, setDictionaries] = useState<any>({})
+  const [showAddressModal, setShowAddressModal] = useState(false)
 
   const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<WiredFormData>({
     resolver: zodResolver(wiredFormSchema)
@@ -128,16 +129,33 @@ export function WiredNewPage() {
             {/* 주소 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">주소 *</label>
-              <KakaoAddressSearch
-                onSelect={(address, zipCode) => {
-                  setValue('address', address)
-                  setValue('zipCode', zipCode)
-                }}
-                disabled={isLoading}
-              />
+              <div className="flex gap-2">
+                <input
+                  {...register('address')}
+                  disabled={isLoading}
+                  placeholder="주소 검색 버튼을 클릭하세요"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  readOnly
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAddressModal(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  주소 검색
+                </button>
+              </div>
               {errors.address && <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>}
-              <input type="hidden" {...register('address')} />
             </div>
+            
+            <KakaoAddressModal
+              isOpen={showAddressModal}
+              onClose={() => setShowAddressModal(false)}
+              onSelect={(address, zipCode) => {
+                setValue('address', address)
+                setValue('zipCode', zipCode)
+              }}
+            />
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">상세주소</label>

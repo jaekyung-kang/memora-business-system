@@ -1,6 +1,6 @@
-// 자동 생성된 버전 파일 - 수정하지 마세요
-export const APP_VERSION = '1.0.3'
-export const BUILD_DATE = '2025-10-11T06:38:01.773Z'
+// 자동 생성된 버전 파일 - DB에서 조회
+export const APP_VERSION = '1.0.4'
+export const BUILD_DATE = '2025-10-11T06:45:30.287Z'
 export const APP_NAME = 'MEMORA'
 
 // 버전 로그 출력
